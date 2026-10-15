@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="과제 제출 마감 직전의 혼란을 체험하는 제한 시간 선택형 웹게임" />
+  <title>과제 제출 1초 전</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================ 시작 화면 ============================ -->
+  <section id="start-screen" class="screen active">
+    <div id="bg-float" class="bg-float" aria-hidden="true"></div>
+
+    <div class="start-card">
+      <div class="deadline-tag">D-DAY · 마감까지 <b>03:00</b></div>
+      <h1 class="game-title">과제 제출<br><span class="one-sec">1초 전</span></h1>
+      <p class="subtitle">진짜 <b>최종 파일</b>을 찾아 제한 시간 안에 제출하세요.</p>
+
+      <div class="howto">
+        <p>① 화면을 떠다니는 파일을 클릭해 단서(폰트·이미지·용량·수정시간·팀원 최신본)를 확인하세요.</p>
+        <p>② 폰트 깨짐, 용량 초과, 와이파이 끊김 등 <b>사건이 터질 때마다 선택</b>해야 합니다.</p>
+        <p>③ 진짜 파일을 골라 <b>제출하기</b>! 선택에 따라 엔딩이 갈립니다.</p>
+      </div>
+
+      <button id="btn-start" class="btn btn-primary big">▶ 제출 시작 (Lv.1)</button>
+
+      <div class="level-box">
+        <div class="level-box-title">난이도 선택 · 레벨을 클리어하면 다음이 열립니다</div>
+        <div id="level-select" class="level-select"></div>
+      </div>
+
+      <div class="records">
+        <div id="rec-count" class="rec-count">엔딩 도감 0 / 0종</div>
+        <ul id="records" class="rec-list"></ul>
+      </div>
+      <p class="foot-note">🔊 효과음이 재생됩니다 · 저장 없이 브라우저에서 바로 플레이</p>
+    </div>
+  </section>
+
+  <!-- ============================ 게임 화면 ============================ -->
+  <section id="game-screen" class="screen">
+    <!-- 상단 바 -->
+    <header class="topbar">
+      <div class="tb-left">
+        <div id="hdr-level" class="level-badge">Lv.1 신입생의 첫 과제</div>
+        <div class="course-line"><span id="hdr-course">과목</span> <em>/</em> <span id="hdr-task">과제</span></div>
+        <div id="hdr-net" class="net net-online">🟢 연결 양호</div>
+      </div>
+
+      <div class="tb-timer">
+        <div class="timer-label">제출 마감까지</div>
+        <div id="timer" class="timer">03:00</div>
+      </div>
+
+      <div class="tb-gauges">
+        <div class="gauge" id="gauge-mental"><label>멘탈 <span class="g-num">80</span></label><div class="g-track"><div class="g-fill"></div></div></div>
+        <div class="gauge" id="gauge-comp"><label>완성도 <span class="g-num">55</span></label><div class="g-track"><div class="g-fill"></div></div></div>
+        <div class="gauge" id="gauge-trust"><label>팀원신뢰 <span class="g-num">70</span></label><div class="g-track"><div class="g-fill"></div></div></div>
+        <div class="gauge" id="gauge-susp"><label>교수의심 <span class="g-num">20</span></label><div class="g-track"><div class="g-fill"></div></div></div>
+        <button id="btn-mute" class="btn-mini" title="음소거">🔊</button>
+        <button id="btn-menu" class="btn-mini" title="처음으로">↺</button>
+      </div>
+    </header>
+
+    <!-- 본문: 데스크톱 + 사이드 패널 -->
+    <main class="game-main">
+      <div id="desktop" class="desktop" aria-label="파일 탐색 영역">
+        <div class="desk-tag">📂 바탕화면 — 파일을 클릭하세요</div>
+      </div>
+
+      <aside class="side">
+        <div class="panel">
+          <div class="panel-title">📄 선택한 파일</div>
+          <div id="file-panel-body" class="panel-body">
+            <p class="hint">파일을 클릭하면 정보가 여기에 표시됩니다.</p>
+          </div>
+          <div class="panel-actions">
+            <button id="btn-submit" class="btn btn-primary" disabled>⬆ 제출하기</button>
+            <button id="btn-insist" class="btn btn-ghost" title="최후의 수단">📧 메일로 보냈다고 우기기</button>
+          </div>
+        </div>
+
+        <div class="panel log-panel">
+          <div class="panel-title">🧾 최근 사건 로그</div>
+          <ul id="log-list" class="log-list"></ul>
+        </div>
+      </aside>
+    </main>
+
+    <!-- 레벨/안내 토스트 -->
+    <div id="toast" class="toast"></div>
+
+    <!-- 사건/선택 모달 -->
+    <div id="modal" class="modal-wrap"></div>
+
+    <!-- 업로드 모달 -->
+    <div id="upload-modal" class="upload-wrap">
+      <div class="upload-card">
+        <div class="up-title">📤 제출 사이트 · 업로드 중</div>
+        <div class="up-file">파일: <b id="up-filename">—</b></div>
+        <div class="up-track"><div id="up-bar" class="up-bar"></div></div>
+        <div class="up-meta"><span id="up-pct">0%</span><span id="up-status">업로드 중...</span></div>
+        <button id="btn-cancel-upload" class="btn btn-ghost small">업로드 취소</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ 엔딩 화면 ============================ -->
+  <section id="ending-screen" class="screen">
+    <div class="end-card">
+      <div id="end-banner" class="end-banner"></div>
+      <div id="end-emoji" class="end-emoji">🎓</div>
+      <h2 id="end-title" class="end-title">엔딩</h2>
+      <p id="end-desc" class="end-desc"></p>
+      <div id="end-stats" class="end-stats"></div>
+      <div class="end-actions">
+        <button id="btn-next" class="btn btn-primary" style="display:none">▶ 다음 레벨</button>
+        <button id="btn-restart" class="btn btn-secondary">↻ 이 레벨 다시</button>
+        <button id="btn-copy" class="btn btn-ghost">📋 결과 복사</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 스크립트 (상대 경로 → GitHub Pages 호환) -->
+  <script src="data.js"></script>
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
